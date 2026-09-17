@@ -1,0 +1,316 @@
+/* =========================================================
+   style.css
+   Theme system uses CSS variables so we can flip light/dark
+   instantly with a single [data-theme] attribute on <html>.
+   ========================================================= */
+
+:root {
+  --bg-color: #f4f6fb;
+  --surface-color: #ffffff;
+  --text-color: #1f2430;
+  --text-muted: #6c7486;
+  --border-color: #e6e9f2;
+  --primary: #6c5ce7;
+  --primary-dark: #5a4bd1;
+  --success: #00b894;
+  --danger: #ff6b6b;
+  --warning: #fdcb6e;
+  --income-color: #00b894;
+  --expense-color: #ff6b6b;
+  --navbar-bg: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+  --card-shadow: 0 4px 20px rgba(31, 36, 48, 0.06);
+  --card-shadow-hover: 0 8px 30px rgba(31, 36, 48, 0.12);
+}
+
+[data-theme="dark"] {
+  --bg-color: #12131c;
+  --surface-color: #1b1d29;
+  --text-color: #eef0f7;
+  --text-muted: #9aa0b4;
+  --border-color: #2a2d3d;
+  --primary: #8b7bff;
+  --primary-dark: #7666f0;
+  --navbar-bg: linear-gradient(135deg, #2d2b55 0%, #4b3f8a 100%);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+/* ---------------- NAVBAR ---------------- */
+.navbar-custom {
+  background: var(--navbar-bg);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.navbar-custom .nav-link:hover {
+  opacity: 0.85;
+}
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  border-radius: 50px;
+  padding: 6px 14px;
+  transition: background 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ---------------- AUTH PAGES (Login / Signup) ---------------- */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 50%, #74b9ff 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  background: var(--surface-color);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+}
+
+.auth-side-panel {
+  background: linear-gradient(160deg, #6c5ce7, #341f97);
+  color: #fff;
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.auth-side-panel h2 {
+  font-weight: 700;
+}
+
+.auth-form-panel {
+  padding: 50px 40px;
+}
+
+.auth-form-panel .form-control {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 12px 15px;
+  border-radius: 10px;
+}
+
+.auth-form-panel .form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  border: none;
+  color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35);
+  color: #fff;
+}
+
+/* ---------------- DASHBOARD CARDS ---------------- */
+.stat-card {
+  background: var(--surface-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.stat-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+}
+
+.stat-icon.income-bg {
+  background: linear-gradient(135deg, #00b894, #55efc4);
+}
+
+.stat-icon.expense-bg {
+  background: linear-gradient(135deg, #ff6b6b, #fab1a0);
+}
+
+.stat-icon.balance-bg {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---------------- GENERIC CARD / PANEL ---------------- */
+.panel-card {
+  background: var(--surface-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+
+/* ---------------- TABLE ---------------- */
+.table-custom {
+  color: var(--text-color);
+}
+
+.table-custom thead th {
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-custom td, .table-custom th {
+  border-color: var(--border-color);
+  vertical-align: middle;
+}
+
+.badge-income {
+  background-color: rgba(0, 184, 148, 0.15);
+  color: var(--income-color);
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-expense {
+  background-color: rgba(255, 107, 107, 0.15);
+  color: var(--expense-color);
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-category {
+  background-color: rgba(108, 92, 231, 0.12);
+  color: var(--primary);
+  padding: 5px 10px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+}
+
+/* ---------------- BUTTONS ---------------- */
+.btn-icon {
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+}
+
+.btn-primary-custom {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(108, 92, 231, 0.35);
+  color: #fff;
+}
+
+/* ---------------- FORMS ---------------- */
+.form-control, .form-select {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 10px;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
+/* ---------------- FOOTER ---------------- */
+.app-footer {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px;
+  font-size: 0.85rem;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 768px) {
+  .auth-side-panel {
+    display: none;
+  }
+  .stat-value {
+    font-size: 1.4rem;
+  }
+}
+
+/* Smooth transitions for theme switching */
+.panel-card, .stat-card, .navbar-custom, .form-control, .form-select {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}

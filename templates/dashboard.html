@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Expense Tracker{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-0">Dashboard</h3>
+    <p class="text-muted mb-0">Here's your financial overview</p>
+  </div>
+  <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+    <i class="bi bi-plus-circle me-1"></i> Add Transaction
+  </button>
+</div>
+
+<!-- ===================== SUMMARY CARDS ===================== -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card d-flex align-items-center gap-3">
+      <div class="stat-icon income-bg"><i class="bi bi-arrow-down-circle"></i></div>
+      <div>
+        <div class="stat-label">Total Income</div>
+        <div class="stat-value">₹{{ "%.2f"|format(summary.income) }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card d-flex align-items-center gap-3">
+      <div class="stat-icon expense-bg"><i class="bi bi-arrow-up-circle"></i></div>
+      <div>
+        <div class="stat-label">Total Expense</div>
+        <div class="stat-value">₹{{ "%.2f"|format(summary.expense) }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card d-flex align-items-center gap-3">
+      <div class="stat-icon balance-bg"><i class="bi bi-wallet2"></i></div>
+      <div>
+        <div class="stat-label">Balance</div>
+        <div class="stat-value">₹{{ "%.2f"|format(summary.balance) }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- ===================== CHART ===================== -->
+  <div class="col-lg-5">
+    <div class="panel-card h-100">
+      <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2"></i>Expense Distribution</h5>
+      {% if category_labels %}
+        <canvas id="expenseChart" height="260"></canvas>
+      {% else %}
+        <p class="text-muted text-center py-5">No expenses recorded yet. Add one to see your chart!</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ===================== RECENT TRANSACTIONS ===================== -->
+  <div class="col-lg-7">
+    <div class="panel-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Recent Transactions</h5>
+        <a href="{{ url_for('transactions') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+      </div>
+
+      {% if recent_transactions %}
+      <div class="table-responsive">
+        <table class="table table-custom align-middle">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Note</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for txn in recent_transactions %}
+            <tr>
+              <td>{{ txn.txn_date }}</td>
+              <td><span class="badge-category">{{ txn.category }}</span></td>
+              <td class="text-muted">{{ txn.note or "—" }}</td>
+              <td class="text-end fw-semibold {{ 'text-success' if txn.type == 'income' else 'text-danger' }}">
+                {{ '+' if txn.type == 'income' else '-' }}₹{{ "%.2f"|format(txn.amount) }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="text-muted text-center py-5">No transactions yet. Click "Add Transaction" to get started!</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADD TRANSACTION MODAL ===================== -->
+<div class="modal fade" id="addTransactionModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius: 16px;">
+      <form method="POST" action="{{ url_for('add_transaction') }}">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Add Transaction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="type" name="type" required>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="category" name="category" required>
+              <option value="Food">Food</option>
+              <option value="Travel">Travel</option>
+              <option value="Bills">Bills</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" step="0.01" min="0.01" class="form-control" name="amount" placeholder="0.00" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="txn_date" required>
+          </div>
+          <div class="mb-1">
+            <label class="form-label">Note (optional)</label>
+            <input type="text" class="form-control" name="note" placeholder="e.g. Grocery shopping">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary-custom">Save Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Set default date to today in the modal
+  document.querySelector('input[name="txn_date"]').valueAsDate = new Date();
+
+  {% if category_labels %}
+  // ---------------- CHART.JS PIE CHART ----------------
+  const ctx = document.getElementById('expenseChart').getContext('2d');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ category_labels|tojson }},
+      datasets: [{
+        data: {{ category_values|tojson }},
+        backgroundColor: [
+          '#6c5ce7', '#00b894', '#fdcb6e', '#ff6b6b', '#74b9ff', '#a29bfe'
+        ],
+        borderWidth: 2,
+        borderColor: isDark ? '#1b1d29' : '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: isDark ? '#eef0f7' : '#1f2430', padding: 15 }
+        }
+      }
+    }
+  });
+  {% endif %}
+</script>
+{% endblock %}
