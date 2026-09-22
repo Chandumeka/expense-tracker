@@ -32,14 +32,17 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('transactions') }}"><i class="bi bi-list-ul me-1"></i>Transactions</a>
           </li>
+          <li class="nav-item d-md-none">
+            <a class="nav-link" href="{{ url_for('profile') }}"><i class="bi bi-person-circle me-1"></i>Profile</a>
+          </li>
         </ul>
         <div class="d-flex align-items-center gap-3">
           <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle theme">
             <i id="theme-icon" class="bi bi-moon-stars-fill"></i>
           </button>
-          <span class="text-white d-none d-md-inline">
+          <a href="{{ url_for('profile') }}" class="text-white text-decoration-none d-none d-md-inline" title="Edit profile">
             <i class="bi bi-person-circle me-1"></i>{{ session.get('user_name') }}
-          </span>
+          </a>
           <a href="{{ url_for('logout') }}" class="btn btn-sm btn-light fw-semibold">
             <i class="bi bi-box-arrow-right me-1"></i>Logout
           </a>

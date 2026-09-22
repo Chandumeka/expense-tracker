@@ -155,6 +155,66 @@ def dashboard():
 
 
 # ------------------------------------------------------------------
+# PROFILE - VIEW + EDIT
+# ------------------------------------------------------------------
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    user_id = session["user_id"]
+    user = User.find_by_id(user_id)
+
+    if not user:
+        flash("Account not found.", "danger")
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_new_password = request.form.get("confirm_new_password", "")
+
+        # ---- Validation ----
+        if not name or not email:
+            flash("Name and email are required.", "danger")
+            return redirect(url_for("profile"))
+
+        if not EMAIL_REGEX.match(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("profile"))
+
+        if not current_password:
+            flash("Enter your current password to save changes.", "danger")
+            return redirect(url_for("profile"))
+
+        # Current password is always required to confirm identity before any change
+        if not User.verify_password(user, current_password):
+            flash("Current password is incorrect.", "danger")
+            return redirect(url_for("profile"))
+
+        # If changing the email, make sure no other account already has it
+        if email.lower() != user["email"].lower() and User.email_taken_by_other(email, user_id):
+            flash("That email is already in use by another account.", "danger")
+            return redirect(url_for("profile"))
+
+        # New password is optional — only validate/apply it if they typed one
+        if new_password:
+            if len(new_password) < 6:
+                flash("New password must be at least 6 characters long.", "danger")
+                return redirect(url_for("profile"))
+            if new_password != confirm_new_password:
+                flash("New passwords do not match.", "danger")
+                return redirect(url_for("profile"))
+
+        User.update_profile(user_id, name, email, new_password or None)
+        session["user_name"] = name  # keep navbar greeting in sync
+        flash("Profile updated successfully.", "success")
+        return redirect(url_for("profile"))
+
+    return render_template("profile.html", user=user)
+
+
+# ------------------------------------------------------------------
 # TRANSACTIONS - LIST + FILTER
 # ------------------------------------------------------------------
 @app.route("/transactions")

@@ -57,6 +57,38 @@ class User:
         """Checks a plaintext password against the stored hash."""
         return check_password_hash(user_row["password_hash"], password)
 
+    @staticmethod
+    def email_taken_by_other(email, exclude_user_id):
+        """True if some OTHER user already has this email (used when editing a profile)."""
+        conn = get_db_connection()
+        row = conn.execute(
+            "SELECT id FROM users WHERE email = ? AND id != ?",
+            (email.lower().strip(), exclude_user_id),
+        ).fetchone()
+        conn.close()
+        return row is not None
+
+    @staticmethod
+    def update_profile(user_id, name, email, new_password=None):
+        """
+        Updates name/email, and optionally the password (only rehashed
+        if new_password is provided — leave it None to keep the old one).
+        """
+        conn = get_db_connection()
+        if new_password:
+            password_hash = generate_password_hash(new_password)
+            conn.execute(
+                "UPDATE users SET name = ?, email = ?, password_hash = ? WHERE id = ?",
+                (name, email.lower().strip(), password_hash, user_id),
+            )
+        else:
+            conn.execute(
+                "UPDATE users SET name = ?, email = ? WHERE id = ?",
+                (name, email.lower().strip(), user_id),
+            )
+        conn.commit()
+        conn.close()
+
 
 # =========================================================
 # TRANSACTION MODEL
